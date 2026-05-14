@@ -1,3 +1,9 @@
+# Namespace for the operator
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: engineering-platform
+---
 # ServiceAccount for the operator
 apiVersion: v1
 kind: ServiceAccount
@@ -31,12 +37,6 @@ subjects:
   - kind: ServiceAccount
     name: teams-operator
     namespace: engineering-platform
----
-# Namespace for the operator
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: engineering-platform
 ---
 # Deployment for the Teams Operator
 apiVersion: apps/v1
