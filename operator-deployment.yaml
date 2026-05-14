@@ -11,12 +11,12 @@ kind: ClusterRole
 metadata:
   name: teams-operator
 rules:
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"]
 ---
 # ClusterRoleBinding to grant permissions
 apiVersion: rbac.authorization.k8s.io/v1
@@ -28,9 +28,9 @@ roleRef:
   kind: ClusterRole
   name: teams-operator
 subjects:
-- kind: ServiceAccount
-  name: teams-operator
-  namespace: engineering-platform
+  - kind: ServiceAccount
+    name: teams-operator
+    namespace: engineering-platform
 ---
 # Namespace for the operator
 apiVersion: v1
@@ -49,7 +49,7 @@ metadata:
   annotations:
     commit-sha: 8b514a1cb354
 spec:
-  replicas: 1  # Only one replica needed for this operator
+  replicas: 1 # Only one replica needed for this operator
   selector:
     matchLabels:
       app: teams-operator
@@ -67,44 +67,44 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: teams-operator
-        image: olivercodes01/teams-operator:0.0.1
-        env:
-        - name: TEAMS_API_URL
-          value: "http://teams-api-service.engineering-platform.svc.cluster.local:4200"
-        - name: POLL_INTERVAL
-          value: "30"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "200m"
-        livenessProbe:
-          exec:
-            command:
-            - python
-            - -c
-            - "import sys; sys.exit(0)"
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          exec:
-            command:
-            - python
-            - -c
-            - "import sys; sys.exit(0)"
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        - name: teams-operator
+          image: ghcr.io/zahlenhelfer/teams-operator:1.0.0
+          env:
+            - name: TEAMS_API_URL
+              value: "http://teams-api-service.engineering-platform.svc.cluster.local:4200"
+            - name: POLL_INTERVAL
+              value: "30"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import sys; sys.exit(0)"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import sys; sys.exit(0)"
+            initialDelaySeconds: 5
+            periodSeconds: 10
